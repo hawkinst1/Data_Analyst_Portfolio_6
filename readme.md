@@ -1,100 +1,69 @@
-Brief
-=============================
-Client is opening a new pizza shop with only take outs and they need data:
-1) Build a bespoke relational database
-2) Create a dashboard for monitoring the data
+**Numbers - Nasa Exoplanets**
 
-The main areas of focus they require are
-- Orders
-- Stock Control
-- Staff
+I wanted to look at more numerical based data and along with an interst in interstellar space decided to do some data analysis on NASA's Exoplanets dataset (planets outside our solar system)
 
-===========================
-**Design**
+**The What**
+What am I looking for in this data?
+- is there a correlation between distance and brightness?
+- is there a correlation between brightness and year of discovery?
+- Are all gas giants comparble to our gas giants in size?
+- What is the orbital radius compared to our solar systems?
+- For planets with a 1 year orbital period are they comparable to earth?
+- For planets with a mass_wrt = 1 (same as Earth) is there a difference in radius_wrt?
 
-I will design the database around what fields they need data in,
-then proceed with **normalising** the data and establishing relationships.
-The fields required by the business are shown below, but I will use other
-examples to inform what other columns should be added.
+What am I going to do with the data?
+I first clean all the rows with null in SSMS, rather than wasting time doing where column x or column y ....
+I found out about dynamic SQL and got the following to work:
+=============================================================
+DECLARE @TableName NVARCHAR(MAX) = 'exoplanets';
+DECLARE @DynamicSQL NVARCHAR(MAX);
 
-Customer Orders table
-- Item name
-- Item price
-- Quantity
-- Customer name
-- Delivery address
+SELECT @DynamicSQL = 'DELETE FROM ' + @TableName + ' WHERE ' +
+    STUFF((
+        SELECT ' OR ' + COLUMN_NAME + ' IS NULL'
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_NAME = @TableName
+        FOR XML PATH('')
+    ), 1, 4, '');
+ EXEC sp_executesql @DynamicSQL;
+=====================================================
 
-Using quick DBD we can quickly create a representation of the tables.
-It becomes apparent that there is a need to create mulitple tables with relationships to remove redundant data from one larger table
-and is laid out:
+This script uses the INFORMATION_SCHEMA.COLUMNS system view to dynamically generate the DELETE statement with the appropriate IS NULL conditions for each column. 
+The STUFF function is used to remove the initial "OR" from the generated conditions.
+counting the remaingin rows:
+==========================
+SELECT
+COUNT(name) AS 'Planets'
+FROM exoplanets 
+========================
+I have 4765 rows to analyse.
 
-orders
--
-row_id int pk
-order_id varchar(100)
-created_at datetime
-item_id int
-quantity int
-cust_id int
-delivery boolean
-address_id int
+I think extra columns are needed, I want to add a column that is a bool for; if the orbital radius is the similar to Earth's = 1, 
+I will allow a positive for any planets with a radius of 0.85 to 1.15. 
 
-customer
--
-cust_id int pk FK >- orders.cust_id
-cust_firstName varchar(100)
-cust_lastName varchar(100)
+the conditional is "IF orbital_radius IS <= 1.15 OR >= 0.85 = 1 ELSE 0, this can be done with the CASE function:
+========================
+(add the column)
+ALTER TABLE exoplanets 
+ADD isEarthObrit BIT
+(use the case)
+(set all to 0)
+UPDATE exoplanets
+SET isEarthOrbit = 0
 
-address
--
-address_id int pk FK >- orders.address_id
-delivery_address1 varchar(255)
-delivery_address2 varchar(255) NULL
-delivery_city varchar(50)
-delivery_postcode varchar(20)
+(update only if they meeet the conditions)
+UPDATE exoplanets
+SET isEarthOrbit = 1
+WHERE orbital_radius <= 1.15 AND orbital_radius >= 0.85
 
-Item
--
-item_id int pk FK >- orders.item_id
-sku int
-item_name varchar(5)
-item_cat varchar(5)
-item_size varchar(5)
-item_price decimal(5,2)
+========================
+89 rows fall within the boundary set.
 
-**Stock Control Requirements**
-what does it need to do?
-- know when stock is empty
-- existing stock amount
+I then need to put this SQL data into Power BI, import using the SQL Server name and database name.
+(note that 1/0 is converted into TRUE/FALSE)
 
-adding these tables to our scheme:
-ingredient
--
-ing_id int pk FK >- recipe.ing_id
-ing_name varchar(255)
-ing_weight int
-ing_meas varchar(20)
-ing_price decimal(5,2)
 
-recipe
--
-row_id int pk
-recipe_id varchar(20) FK >- Item.sku
-ing_id varchar(10) FK >- inventory.inv_id
-quantity int
 
-inventory
--
-inv_id int pk
-item_id varchar(10)
-quantity int
-
-===================================
-Staff
-- Which staff are working when>
-- Based on staff how much each pizza costs
-
-  
 
 
 
