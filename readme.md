@@ -89,7 +89,12 @@ inv_id int pk
 item_id varchar(10)
 quantity int
 
+===================================
+Staff
+- Which staff are working when>
+- Based on staff how much each pizza costs
 
+  
 
 
 
