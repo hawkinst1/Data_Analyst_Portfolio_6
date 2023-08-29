@@ -24,3 +24,4 @@ Customer Orders table
 - Customer name
 - Delivery address
 
+Using quick DBD we can quickly create a representation of the tables.
