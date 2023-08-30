@@ -11,9 +11,9 @@ What am I looking for in this data?
 - For planets with a 1 year orbital period are they comparable to earth?
 - For planets with a mass_wrt = 1 (same as Earth) is there a difference in radius_wrt?
 
-What am I going to do with the data?
+**What am I going to do with the data?
 I first clean all the rows with null in SSMS, rather than wasting time doing where column x or column y ....
-I found out about dynamic SQL and got the following to work:
+I found out about dynamic SQL and got the following to work:**
 =============================================================
 DECLARE @TableName NVARCHAR(MAX) = 'exoplanets';
 DECLARE @DynamicSQL NVARCHAR(MAX);
