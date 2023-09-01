@@ -16,7 +16,7 @@ What am I going to do with the data?
 I first clean all the rows with null in SSMS, rather than wasting time doing where column x or column y ....
 I found out about dynamic SQL and got the following to work:
 
-=============================================================
+
 DECLARE @TableName NVARCHAR(MAX) = 'exoplanets';
 DECLARE @DynamicSQL NVARCHAR(MAX);
 
@@ -28,23 +28,23 @@ SELECT @DynamicSQL = 'DELETE FROM ' + @TableName + ' WHERE ' +
         FOR XML PATH('')
     ), 1, 4, '');
  EXEC sp_executesql @DynamicSQL;
-=====================================================
+
 
 This script uses the INFORMATION_SCHEMA.COLUMNS system view to dynamically generate the DELETE statement with the appropriate IS NULL conditions for each column. 
 The STUFF function is used to remove the initial "OR" from the generated conditions.
 counting the remaingin rows:
-==========================
+
 SELECT
 COUNT(name) AS 'Planets'
 FROM exoplanets 
-========================
+
 I have 4765 rows to analyse.
 
 I think extra columns are needed, I want to add a column that is a bool for; if the orbital radius is the similar to Earth's = 1, 
 I will allow a positive for any planets with a radius of 0.85 to 1.15. 
 
-the conditional is "IF orbital_radius IS <= 1.15 OR >= 0.85 = 1 ELSE 0, this can be done with the CASE function:
-========================
+The conditional is "IF orbital_radius IS <= 1.15 OR >= 0.85 = 1 ELSE 0, this can be done with the CASE function:
+
 (add the column)
 ALTER TABLE exoplanets 
 ADD isEarthObrit BIT
@@ -58,7 +58,6 @@ UPDATE exoplanets
 SET isEarthOrbit = 1
 WHERE orbital_radius <= 1.15 AND orbital_radius >= 0.85
 
-========================
 89 rows fall within the boundary set.
 
 I then need to put this SQL data into Power BI, import using the SQL Server name and database name.
