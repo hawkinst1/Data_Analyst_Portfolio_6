@@ -60,6 +60,14 @@ WHERE orbital_radius <= 1.15 AND orbital_radius >= 0.85
 
 89 rows fall within the boundary set.
 
+I also noticed that for the planet_type it gives an answer of 'Neptune-like', to keep inline with the other answers I want to change this to 'Ice Giant' instead.
+
+This needs an update in the column 'planet_type' where value = 'Neptune-like':
+
+update exoplanets
+set planet_type = 'Ice Giant'
+where planet_type = 'Neptune-like'
+
 I then need to put this SQL data into Power BI, import using the SQL Server name and database name.
 (note that 1/0 is converted into TRUE/FALSE)
 
