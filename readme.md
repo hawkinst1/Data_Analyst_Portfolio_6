@@ -2,7 +2,8 @@
 
 I wanted to look at more numerical based data and along with an interst in interstellar space decided to do some data analysis on NASA's Exoplanets dataset (planets outside our solar system)
 
-**The What**
+The What
+
 What am I looking for in this data?
 - is there a correlation between distance and brightness?
 - is there a correlation between brightness and year of discovery?
