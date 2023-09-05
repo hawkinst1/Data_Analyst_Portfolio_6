@@ -32,7 +32,7 @@ SELECT @DynamicSQL = 'DELETE FROM ' + @TableName + ' WHERE ' +
 
 This script uses the INFORMATION_SCHEMA.COLUMNS system view to dynamically generate the DELETE statement with the appropriate IS NULL conditions for each column. 
 The STUFF function is used to remove the initial "OR" from the generated conditions.
-counting the remaingin rows:
+counting the remaining rows:
 
 SELECT
 COUNT(name) AS 'Planets'
